@@ -1,27 +1,64 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+import Navigation from "./components/Navigation";
 
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
+import Categories from "./pages/Categories";
 import Goals from "./pages/Goals";
-import Analytics from "./pages/Analytics";
 import AIInsights from "./pages/AIInsights";
-import ExchangeRates from "./pages/ExchangeRates";
 import Simulator from "./pages/Simulator";
 import ScenarioHistory from "./pages/ScenarioHistory";
 
 function App() {
   return (
     <BrowserRouter>
+
+      <Navigation />
+
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/transactions" element={<Transactions />} />
-        <Route path="/goals" element={<Goals />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/ai-insights" element={<AIInsights />} />
-        <Route path="/exchange-rates" element={<ExchangeRates />} />
-        <Route path="/simulator" element={<Simulator />} />
-        <Route path="/scenario-history" element={<ScenarioHistory />} />
+
+        <Route
+          path="/"
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="/transactions"
+          element={<Transactions />}
+        />
+
+        <Route
+          path="/categories"
+          element={<Categories />}
+        />
+
+        <Route
+          path="/goals"
+          element={<Goals />}
+        />
+
+        <Route
+          path="/ai-insights"
+          element={<AIInsights />}
+        />
+
+        <Route
+          path="/simulator"
+          element={<Simulator />}
+        />
+
+        <Route
+          path="/history"
+          element={<ScenarioHistory />}
+        />
+
       </Routes>
+
     </BrowserRouter>
   );
 }
