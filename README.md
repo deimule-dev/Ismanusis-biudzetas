@@ -1,73 +1,75 @@
-# React + TypeScript + Vite
+Personal Finance Tracker + AI
+Overview
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal Finance Tracker + AI is a web application for managing personal finances, tracking expenses, monitoring savings goals, and generating AI-powered financial insights.
 
-Currently, two official plugins are available:
+Features
+Dashboard
+Total income
+Total expenses
+Current balance
+Active goals
+Transactions
+Add income and expenses
+Transaction history
+Delete transactions
+Categories
+Create and manage categories
+Goals
+Create savings goals
+Track progress
+Analytics
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Interactive charts created with Recharts:
 
-## React Compiler
+Line Chart
+Pie Chart
+Bar Chart
+Exchange Rate API
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Real-time currency exchange rates.
 
-## Expanding the ESLint configuration
+AI Insights
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+OpenAI analyzes financial data and generates recommendations.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+What-if Simulator
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Simulation of different saving scenarios:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Conservative
+Normal
+Aggressive
+Scenario History
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Stores previous simulations and AI analyses.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Technologies
+Frontend
+React
+TypeScript
+Vite
+Database
+Supabase
+PostgreSQL
+Charts
+Recharts
+AI
+OpenAI API
+Hosting
+Vercel
+Version Control
+GitHub
+Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Install dependencies:
+
+npm install
+
+Run locally:
+
+npm run dev
+
+Author
+
+Final project for IT studies.
