@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { getCategories } from "../services/categoryService";
+import {
+  getCategories,
+  getCategoriesWithStats,
+} from "../services/categoryService";
 
-export function useCategories() {
+export function useCategories(withStats = false) {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -9,7 +12,9 @@ export function useCategories() {
     try {
       setLoading(true);
 
-      const data = await getCategories();
+      const data = withStats
+        ? await getCategoriesWithStats()
+        : await getCategories();
 
       setCategories(data || []);
     } finally {
@@ -19,7 +24,7 @@ export function useCategories() {
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [withStats]);
 
   return {
     categories,

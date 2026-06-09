@@ -25,7 +25,7 @@ export async function addTransaction(
 export async function getTransactions() {
   const { data, error } = await supabase
     .from("transactions")
-    .select("*")
+    .select("*, categories(name, type)")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
