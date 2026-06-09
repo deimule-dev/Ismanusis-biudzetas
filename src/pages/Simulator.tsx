@@ -4,7 +4,7 @@ import { useSimulator } from "../hooks/useSimulator";
 import { formatScenario } from "../lib/labels";
 
 export default function Simulator() {
-  const { results, aiInsight, simulate } = useSimulator();
+  const { results, aiInsight, saveNotice, simulate } = useSimulator();
 
   const [income, setIncome] = useState("");
   const [expenses, setExpenses] = useState("");
@@ -62,6 +62,23 @@ export default function Simulator() {
           </button>
         </div>
       </div>
+
+      {saveNotice && (
+        <p
+          className={`alert ${
+            saveNotice.includes("sql")
+              ? "alert--info"
+              : "alert--info"
+          }`}
+          style={{
+            borderColor: saveNotice.includes("sql")
+              ? "rgba(251, 191, 36, 0.35)"
+              : "rgba(16, 185, 129, 0.35)",
+          }}
+        >
+          {saveNotice}
+        </p>
+      )}
 
       {results.length > 0 && (
         <>

@@ -1,62 +1,48 @@
+import { useCallback, useEffect, useState } from "react";
 import {
-useEffect,
-useState
-}
-from "react";
-
-import {
-getScenarioLogs
-}
-from "../services/scenarioLogService";
+  deleteScenarioLog,
+  getScenarioLogs,
+} from "../services/scenarioLogService";
 
 export function useScenarioLogs() {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const [logs,setLogs] =
-    useState<any[]>([]);
-
-  const [loading,setLoading] =
-    useState(false);
-
-  const [error,setError] =
-    useState<string | null>(null);
-
-  async function loadLogs(){
-
+  const loadLogs = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const data =
-        await getScenarioLogs();
-
-      setLogs(
-        data || []
-      );
+      const data = await getScenarioLogs();
+      setLogs(data || []);
     } catch {
       setError(
-        "Nepavyko įkelti scenarijų istorijos. Patikrinkite, ar Supabase sukurta scenario_logs lentelė."
+        "Nepavyko įkelti scenarijų istorijos."
       );
       setLogs([]);
     } finally {
       setLoading(false);
     }
+  }, []);
 
+  useEffect(() => {
+    loadLogs();
+  }, [loadLogs]);
+
+  async function removeLog(
+    id: number,
+    source?: "local"
+  ) {
+    await deleteScenarioLog(id, source);
+    await loadLogs();
   }
 
-  useEffect(()=>{
-
-    loadLogs();
-
-  },[]);
-
   return {
-
     logs,
-
     loading,
-
     error,
-
+    reload: loadLogs,
+    removeLog,
   };
-
 }
