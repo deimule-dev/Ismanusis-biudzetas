@@ -17,18 +17,29 @@ export function useScenarioLogs() {
   const [loading,setLoading] =
     useState(false);
 
+  const [error,setError] =
+    useState<string | null>(null);
+
   async function loadLogs(){
 
-    setLoading(true);
+    try {
+      setLoading(true);
+      setError(null);
 
-    const data =
-      await getScenarioLogs();
+      const data =
+        await getScenarioLogs();
 
-    setLogs(
-      data || []
-    );
-
-    setLoading(false);
+      setLogs(
+        data || []
+      );
+    } catch {
+      setError(
+        "Nepavyko įkelti scenarijų istorijos. Patikrinkite, ar Supabase sukurta scenario_logs lentelė."
+      );
+      setLogs([]);
+    } finally {
+      setLoading(false);
+    }
 
   }
 
@@ -42,7 +53,9 @@ export function useScenarioLogs() {
 
     logs,
 
-    loading
+    loading,
+
+    error,
 
   };
 

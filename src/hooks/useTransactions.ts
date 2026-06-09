@@ -18,7 +18,7 @@ export function useTransactions() {
 
       setTransactions(data || []);
     } catch {
-      setError("Failed to load transactions");
+      setError("Nepavyko įkelti operacijų");
     } finally {
       setLoading(false);
     }

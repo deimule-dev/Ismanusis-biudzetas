@@ -5,16 +5,19 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import { formatChartLabel } from "../../lib/labels";
 
 interface Props {
   data: any[];
 }
 
 const COLORS = [
-  "#2563eb",
-  "#16a34a",
-  "#dc2626",
-  "#f59e0b",
+  "#10b981",
+  "#8b5cf6",
+  "#fb7185",
+  "#fbbf24",
+  "#34d399",
+  "#a78bfa",
 ];
 
 export default function ExpensePieChart({
@@ -36,9 +39,20 @@ export default function ExpensePieChart({
         ))}
       </Pie>
 
-      <Tooltip />
+      <Tooltip
+        contentStyle={{
+          background: "#1a2236",
+          border: "1px solid rgba(148,163,184,0.2)",
+          borderRadius: "10px",
+          color: "#f1f5f9",
+        }}
+        formatter={(value, name) => [
+          value,
+          formatChartLabel(String(name)),
+        ]}
+      />
 
-      <Legend />
+      <Legend wrapperStyle={{ color: "#94a3b8", fontSize: "13px" }} />
     </PieChart>
   );
 }

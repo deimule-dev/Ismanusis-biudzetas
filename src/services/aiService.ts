@@ -1,3 +1,4 @@
+import { formatScenario } from "../lib/labels";
 import { saveAILog } from "./aiLogService";
 
 function getTotals(
@@ -49,19 +50,19 @@ function localInsights(
 
   if (balance > 0) {
     message +=
-      "Your balance is positive. ";
+      "Jūsų balansas yra teigiamas. ";
   }
 
   if (totalExpenses > totalIncome) {
     message +=
-      "Warning: expenses exceed income. ";
+      "Įspėjimas: išlaidos viršija pajamas. ";
   }
 
   message +=
-    `You currently have ${goals.length} active goals. `;
+    `Šiuo metu turite ${goals.length} aktyvius tikslus. `;
 
   message +=
-    `Total income: ${totalIncome} EUR. Total expenses: ${totalExpenses} EUR.`;
+    `Bendros pajamos: ${totalIncome} EUR. Bendros išlaidos: ${totalExpenses} EUR.`;
 
   return message;
 }
@@ -78,25 +79,25 @@ function localRecommendations(
 
   if (totalExpenses > 0) {
     tips.push(
-      "Review your biggest expense categories and set a weekly spending limit."
+      "Peržiūrėkite didžiausias išlaidų kategorijas ir nustatykite savaitinį limitą."
     );
   }
 
   if (balance < 0) {
     tips.push(
-      "Try to reduce non-essential spending until your balance is positive again."
+      "Stenkitės mažinti nebūtinas išlaidas, kol balansas vėl taps teigiamas."
     );
   }
 
   if (goals.length > 0) {
     tips.push(
-      "Allocate a fixed amount each month toward your savings goals."
+      "Kiekvieną mėnesį skirti fiksuotą sumą taupymo tikslams."
     );
   }
 
   if (tips.length === 0) {
     tips.push(
-      "Add more transactions to get personalized recommendations."
+      "Pridėkite daugiau operacijų, kad gautumėte asmenines rekomendacijas."
     );
   }
 
@@ -132,15 +133,15 @@ function localMonthlySummary(
   } = getTotals(monthlyTransactions);
 
   const monthName =
-    now.toLocaleString("en", {
+    now.toLocaleString("lt", {
       month: "long",
     });
 
   return (
-    `${monthName} summary: income ${totalIncome} EUR, ` +
-    `expenses ${totalExpenses} EUR, ` +
-    `balance ${balance} EUR. ` +
-    `Active goals: ${goals.length}.`
+    `${monthName} santrauka: pajamos ${totalIncome} EUR, ` +
+    `išlaidos ${totalExpenses} EUR, ` +
+    `balansas ${balance} EUR. ` +
+    `Aktyvūs tikslai: ${goals.length}.`
   );
 }
 
@@ -222,7 +223,7 @@ Goals:
 
 ${JSON.stringify(goals)}
 
-Give 3 brief insights about the user's financial situation.
+Give 3 brief insights about the user's financial situation. Respond in Lithuanian.
 `;
 
   const { result } = await callAI(
@@ -253,7 +254,7 @@ Goals:
 
 ${JSON.stringify(goals)}
 
-Analyze spending habits and give 3 practical saving recommendations.
+Analyze spending habits and give 3 practical saving recommendations. Respond in Lithuanian.
 `;
 
   const { result } = await callAI(
@@ -301,7 +302,7 @@ Goals:
 
 ${JSON.stringify(goals)}
 
-Write a short monthly financial summary with income, expenses, and balance.
+Write a short monthly financial summary with income, expenses, and balance. Respond in Lithuanian.
 `;
 
   const { result } = await callAI(
@@ -318,41 +319,77 @@ Write a short monthly financial summary with income, expenses, and balance.
   return result;
 }
 
+function localScenarioAnalysis(
+  scenarios: any[]
+) {
+
+  const best = [...scenarios].sort(
+    (a, b) => a.months - b.months
+  )[0];
+
+  if (!best || best.months <= 0) {
+    return (
+      "Nepakanka lėšų taupymui. Sumažinkite išlaidas arba padidinkite pajamas."
+    );
+  }
+
+  return (
+    `Geriausias variantas: ${formatScenario(best.scenario)} — tikslas pasiekiamas per ${best.months} mėn. ` +
+    "Rekomenduojama reguliariai sekti išlaidas ir koreguoti taupymo planą."
+  );
+}
+
 export async function analyzeScenario(
   scenarios: any[]
 ) {
 
-  const response =
-    await fetch(
-      "/api/ai",
-      {
-        method: "POST",
+  try {
 
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
+    const response =
+      await fetch(
+        "/api/ai",
+        {
+          method: "POST",
 
-        body: JSON.stringify({
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-          prompt: `
+          body: JSON.stringify({
+
+            prompt: `
 
 These are financial scenarios:
 
 ${JSON.stringify(scenarios)}
 
-Explain which scenario is best and provide recommendations.
+Explain which scenario is best and provide recommendations. Respond in Lithuanian.
 
 `
 
-        })
+          })
 
-      }
-    );
+        }
+      );
 
-  const data =
-    await response.json();
+    if (!response.ok) {
+      throw new Error("AI API failed");
+    }
 
-  return data.insight;
+    const data =
+      await response.json();
+
+    if (!data.insight) {
+      throw new Error("Empty AI response");
+    }
+
+    return data.insight as string;
+
+  } catch {
+
+    return localScenarioAnalysis(scenarios);
+
+  }
 
 }

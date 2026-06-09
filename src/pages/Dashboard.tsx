@@ -1,42 +1,54 @@
+import Loading from "../components/Loading";
 import { useDashboard } from "../hooks/useDashboard";
 
 export default function Dashboard() {
-  const { dashboard, loading } =
-    useDashboard();
+  const { dashboard, loading } = useDashboard();
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (loading) return <Loading />;
 
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <div className="page">
+      <header className="page-header">
+        <h1>Apžvalga</h1>
+        <p className="page-subtitle">
+          Jūsų finansų būsena viename žvilgsnyje
+        </p>
+      </header>
 
-      <hr />
+      <div className="stat-grid">
+        <div className="stat-card stat-card--income">
+          <div className="stat-card__icon">📈</div>
+          <p className="stat-card__label">Bendros pajamos</p>
+          <p className="stat-card__value">{dashboard.totalIncome} €</p>
+        </div>
 
-      <h2>
-        Total Income:
-        {" "}
-        {dashboard.totalIncome} €
-      </h2>
+        <div className="stat-card stat-card--expense">
+          <div className="stat-card__icon">📉</div>
+          <p className="stat-card__label">Bendros išlaidos</p>
+          <p className="stat-card__value">{dashboard.totalExpenses} €</p>
+        </div>
 
-      <h2>
-        Total Expenses:
-        {" "}
-        {dashboard.totalExpenses} €
-      </h2>
+        <div className="stat-card stat-card--balance">
+          <div className="stat-card__icon">💎</div>
+          <p className="stat-card__label">Balansas</p>
+          <p className="stat-card__value">{dashboard.balance} €</p>
+        </div>
 
-      <h2>
-        Balance:
-        {" "}
-        {dashboard.balance} €
-      </h2>
+        <div className="stat-card stat-card--goals">
+          <div className="stat-card__icon">🎯</div>
+          <p className="stat-card__label">Aktyvūs tikslai</p>
+          <p className="stat-card__value">{dashboard.goalsCount}</p>
+        </div>
+      </div>
 
-      <h2>
-        Active Goals:
-        {" "}
-        {dashboard.goalsCount}
-      </h2>
+      <div className="card">
+        <h2 className="card-title">Greita nuoroda</h2>
+        <p style={{ margin: 0, color: "var(--text-muted)" }}>
+          Pridėkite naują operaciją skiltyje <strong style={{ color: "var(--text-h)" }}>Operacijos</strong>,
+          stebėkite tikslus skiltyje <strong style={{ color: "var(--text-h)" }}>Tikslai</strong>,
+          arba gaukite DI patarimų skiltyje <strong style={{ color: "var(--accent)" }}>DI įžvalgos</strong>.
+        </p>
+      </div>
     </div>
   );
 }

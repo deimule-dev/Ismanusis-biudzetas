@@ -1,10 +1,10 @@
 -- Paleiskite Supabase SQL Editor (vieną kartą)
 
 insert into categories (name, type) values
-  ('Salary', 'income'),
-  ('Freelance', 'income'),
-  ('Food', 'expense'),
-  ('Transport', 'expense'),
-  ('Shopping', 'expense'),
-  ('Entertainment', 'expense'),
-  ('Utilities', 'expense');
+  ('Atlyginimas', 'income'),
+  ('Laisvai samdomas darbas', 'income'),
+  ('Maistas', 'expense'),
+  ('Transportas', 'expense'),
+  ('Pirkimai', 'expense'),
+  ('Pramogos', 'expense'),
+  ('Komunalinės paslaugos', 'expense');

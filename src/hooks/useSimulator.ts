@@ -42,19 +42,17 @@ export function useSimulator() {
 
     setAiInsight(insight);
 
-    await saveScenarioLog(
-
-      income,
-
-      expenses,
-
-      goalAmount,
-
-      data,
-
-      insight
-
-    );
+    try {
+      await saveScenarioLog(
+        income,
+        expenses,
+        goalAmount,
+        data,
+        insight
+      );
+    } catch {
+      // istorija neblokuoja simuliatoriaus
+    }
 
   }
 

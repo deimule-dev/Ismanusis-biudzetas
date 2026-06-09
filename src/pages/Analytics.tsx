@@ -1,106 +1,57 @@
 import ExpenseLineChart from "../components/charts/ExpenseLineChart";
 import ExpensePieChart from "../components/charts/ExpensePieChart";
 import GoalsBarChart from "../components/charts/GoalsBarChart";
+import Loading from "../components/Loading";
 import { useAnalytics } from "../hooks/useAnalytics";
 
 export default function Analytics() {
+  const { transactions, goals, loading } = useAnalytics();
 
-  const {
-    transactions,
-    goals,
-    loading,
-  } = useAnalytics();
+  if (loading) return <Loading />;
 
-  if (loading) {
+  const expenseHistory = transactions
+    .filter((t) => t.type === "expense")
+    .map((t) => ({ date: t.date, amount: t.amount }));
 
-    return <p>Loading...</p>;
-
-  }
-
-
-  // LINE CHART
-  const expenseHistory =
-    transactions
-      .filter(
-        (t) => t.type === "expense"
-      )
-      .map((t) => ({
-        date: t.date,
-        amount: t.amount,
-      }));
-
-
-  // PIE CHART
   const categoryTotals: Record<string, number> = {};
-
   transactions
-    .filter(
-      (t) => t.type === "expense"
-    )
+    .filter((t) => t.type === "expense")
     .forEach((t) => {
-
-      const category =
-        t.note || "Other";
-
+      const category = t.note || "Kita";
       categoryTotals[category] =
-        (categoryTotals[category] || 0)
-        + Number(t.amount);
-
+        (categoryTotals[category] || 0) + Number(t.amount);
     });
 
-  const categoryData =
-    Object.entries(categoryTotals)
-      .map(
-        ([name, amount]) => ({
-          name,
-          amount,
-        })
-      );
+  const categoryData = Object.entries(categoryTotals).map(
+    ([name, amount]) => ({ name, amount })
+  );
 
-
-  // BAR CHART
-  const goalsData =
-    goals.map((goal) => ({
-
-      title: goal.title,
-
-      current_amount:
-        goal.current_amount,
-
-    }));
-
+  const goalsData = goals.map((goal) => ({
+    title: goal.title,
+    current_amount: goal.current_amount,
+  }));
 
   return (
+    <div className="page">
+      <header className="page-header">
+        <h1>Analitika</h1>
+        <p className="page-subtitle">Išlaidų ir tikslų vizualizacija</p>
+      </header>
 
-    <div>
+      <div className="chart-card">
+        <h2 className="card-title">Išlaidos laikui bėgant</h2>
+        <ExpenseLineChart data={expenseHistory} />
+      </div>
 
-      <h1>Analytics</h1>
+      <div className="chart-card">
+        <h2 className="card-title">Išlaidos pagal kategoriją</h2>
+        <ExpensePieChart data={categoryData} />
+      </div>
 
-      <h2>
-        Expenses Over Time
-      </h2>
-
-      <ExpenseLineChart
-        data={expenseHistory}
-      />
-
-      <h2>
-        Expenses By Category
-      </h2>
-
-      <ExpensePieChart
-        data={categoryData}
-      />
-
-      <h2>
-        Goals Progress
-      </h2>
-
-      <GoalsBarChart
-        data={goalsData}
-      />
-
+      <div className="chart-card">
+        <h2 className="card-title">Tikslų progresas</h2>
+        <GoalsBarChart data={goalsData} />
+      </div>
     </div>
-
   );
 }

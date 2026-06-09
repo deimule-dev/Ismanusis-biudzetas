@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCategories } from "../hooks/useCategories";
+import { formatCategoryName } from "../lib/labels";
 import type { Category } from "../types/category";
 
 interface Props {
@@ -33,79 +34,81 @@ export default function TransactionForm({ onSave }: Props) {
 
   async function handleSubmit() {
     if (categoryId === "") return;
-
     await onSave(type, Number(amount), note, categoryId);
-
     setAmount("");
     setNote("");
   }
 
   return (
-    <>
-      <label>
-        Type
-        <br />
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
+    <div className="card form-card">
+      <h2 className="card-title">Nauja operacija</h2>
+
+      <div className="form-grid">
+        <div className="form-group">
+          <label>Tipas</label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option value="income">Pajamos</option>
+            <option value="expense">Išlaidos</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Kategorija</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(Number(e.target.value))}
+            disabled={loading || filteredCategories.length === 0}
+          >
+            {filteredCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {formatCategoryName(category.name)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Suma (€)</label>
+          <input
+            type="number"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Pastaba</label>
+          <input
+            placeholder="Pvz. pietūs restorane"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </div>
+
+        <button
+          className="btn btn-primary"
+          onClick={handleSubmit}
+          disabled={categoryId === ""}
         >
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-      </label>
+          Išsaugoti
+        </button>
+      </div>
 
-      <br />
-      <br />
-
-      <label>
-        Category
-        <br />
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(Number(e.target.value))}
-          disabled={loading || filteredCategories.length === 0}
-        >
-          {filteredCategories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      {loading && <p>Loading categories...</p>}
-
-      {!loading && filteredCategories.length === 0 && (
-        <p>
-          Kategorijų nėra. Paleiskite seed-categories.sql Supabase SQL Editor.
+      {loading && (
+        <p style={{ marginTop: "1rem", color: "var(--text-muted)" }}>
+          Kraunamos kategorijos...
         </p>
       )}
 
-      <br />
-      <br />
-
-      <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-
-      <br />
-      <br />
-
-      <input
-        placeholder="Note"
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-      />
-
-      <br />
-      <br />
-
-      <button onClick={handleSubmit} disabled={categoryId === ""}>
-        Save
-      </button>
-    </>
+      {!loading && filteredCategories.length === 0 && (
+        <p className="alert alert--info" style={{ marginTop: "1rem", marginBottom: 0 }}>
+          Kategorijų nėra. Paleiskite seed-categories.sql Supabase SQL Editor.
+        </p>
+      )}
+    </div>
   );
 }

@@ -96,7 +96,7 @@ export function useAIInsights() {
       console.error(err);
 
       setError(
-        "Failed to load AI insights"
+        "Nepavyko įkelti DI įžvalgų"
       );
 
     } finally {

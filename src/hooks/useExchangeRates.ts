@@ -23,7 +23,7 @@ export function useExchangeRates() {
     } catch {
 
       setError(
-        "Failed to load exchange rates"
+        "Nepavyko įkelti valiutų kursų"
       );
 
     } finally {

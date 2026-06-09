@@ -6,7 +6,7 @@ export async function getExchangeRates() {
 
   if (!response.ok) {
     throw new Error(
-      "Failed to fetch exchange rates"
+      "Nepavyko gauti valiutų kursų"
     );
   }
 

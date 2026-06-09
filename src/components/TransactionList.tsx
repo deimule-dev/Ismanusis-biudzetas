@@ -9,8 +9,17 @@ export default function TransactionList({
   transactions,
   onDelete,
 }: Props) {
+  if (transactions.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-state__icon">💳</div>
+        <p>Operacijų dar nėra. Pridėkite pirmąją aukščiau!</p>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="list">
       {transactions.map((transaction) => (
         <TransactionItem
           key={transaction.id}
@@ -18,6 +27,6 @@ export default function TransactionList({
           onDelete={onDelete}
         />
       ))}
-    </>
+    </div>
   );
 }

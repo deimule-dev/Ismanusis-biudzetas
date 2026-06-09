@@ -1,6 +1,9 @@
 import { supabase }
 from "../lib/supabase";
 
+const TEST_USER_ID =
+  "11111111-1111-1111-1111-111111111111";
+
 export async function saveScenarioLog(
 
 income:number,
@@ -19,17 +22,12 @@ aiResponse:string
     await supabase
       .from("scenario_logs")
       .insert([{
-
+        user_id: TEST_USER_ID,
         income,
-
         expenses,
-
-        goal_amount:goalAmount,
-
-        scenario_result:scenarioResult,
-
-        ai_response:aiResponse
-
+        goal_amount: goalAmount,
+        scenario_result: scenarioResult,
+        ai_response: aiResponse,
       }]);
 
   if(error)

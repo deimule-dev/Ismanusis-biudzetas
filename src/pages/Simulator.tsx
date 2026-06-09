@@ -1,141 +1,95 @@
-import { useState }
-from "react";
-
-import {
-  useSimulator
-}
-from "../hooks/useSimulator";
-
-import SimulatorChart
-from "../components/charts/SimulatorChart";
+import { useState } from "react";
+import SimulatorChart from "../components/charts/SimulatorChart";
+import { useSimulator } from "../hooks/useSimulator";
+import { formatScenario } from "../lib/labels";
 
 export default function Simulator() {
+  const { results, aiInsight, simulate } = useSimulator();
 
-  const {
-
-    results,
-
-    aiInsight,
-
-    simulate
-
-  }
-  =
-  useSimulator();
-
-  const [income, setIncome] =
-    useState("");
-
-  const [expenses, setExpenses] =
-    useState("");
-
-  const [goal, setGoal] =
-    useState("");
+  const [income, setIncome] = useState("");
+  const [expenses, setExpenses] = useState("");
+  const [goal, setGoal] = useState("");
 
   return (
+    <div className="page">
+      <header className="page-header">
+        <h1>„Kas jei" simuliatorius</h1>
+        <p className="page-subtitle">
+          Išbandykite skirtingus taupymo scenarijus
+        </p>
+      </header>
 
-    <div>
+      <div className="card form-card">
+        <h2 className="card-title">Įveskite duomenis</h2>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Pajamos (€)</label>
+            <input
+              type="number"
+              placeholder="2000"
+              value={income}
+              onChange={(e) => setIncome(e.target.value)}
+            />
+          </div>
 
-      <h1>
-        What-if Simulator
-      </h1>
+          <div className="form-group">
+            <label>Išlaidos (€)</label>
+            <input
+              type="number"
+              placeholder="1500"
+              value={expenses}
+              onChange={(e) => setExpenses(e.target.value)}
+            />
+          </div>
 
-      <input
-        type="number"
-        placeholder="Income"
-        value={income}
-        onChange={(e)=>
-          setIncome(e.target.value)
-        }
-      />
+          <div className="form-group">
+            <label>Tikslo suma (€)</label>
+            <input
+              type="number"
+              placeholder="5000"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+            />
+          </div>
 
-      <br /><br />
-
-      <input
-        type="number"
-        placeholder="Expenses"
-        value={expenses}
-        onChange={(e)=>
-          setExpenses(e.target.value)
-        }
-      />
-
-      <br /><br />
-
-      <input
-        type="number"
-        placeholder="Goal Amount"
-        value={goal}
-        onChange={(e)=>
-          setGoal(e.target.value)
-        }
-      />
-
-      <br /><br />
-
-      <button
-        onClick={()=>
-          simulate(
-            Number(income),
-            Number(expenses),
-            Number(goal)
-          )
-        }
-      >
-
-        Simulate
-
-      </button>
-
-      <hr />
-
-      {
-        results.map(
-          (item)=>(
-
-            <div key={item.scenario}>
-
-              <h3>
-
-                {item.scenario}
-
-              </h3>
-
-              <p>
-
-                Goal in
-
-                {item.months}
-
-                months
-
-              </p>
-
-            </div>
-
-          ))
-      }
-
-      <SimulatorChart
-        data={results}
-      />
-
-      <hr />
-
-      <h2>
-
-        AI Analysis
-
-      </h2>
-
-      <div>
-
-        {aiInsight}
-
+          <button
+            className="btn btn-accent"
+            onClick={() =>
+              simulate(Number(income), Number(expenses), Number(goal))
+            }
+          >
+            ✨ Simuliuoti
+          </button>
+        </div>
       </div>
 
+      {results.length > 0 && (
+        <>
+          <h2 className="section-title">Scenarijų rezultatai</h2>
+          <div className="scenario-grid">
+            {results.map((item) => (
+              <div key={item.scenario} className="scenario-card">
+                <h3>{formatScenario(item.scenario)}</h3>
+                <p>
+                  Tikslas pasiekiamas per{" "}
+                  <strong>{item.months}</strong> mėn.
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="chart-card">
+            <SimulatorChart data={results} />
+          </div>
+
+          {aiInsight && (
+            <>
+              <h2 className="section-title">DI analizė</h2>
+              <div className="ai-block">{aiInsight}</div>
+            </>
+          )}
+        </>
+      )}
     </div>
-
   );
-
 }

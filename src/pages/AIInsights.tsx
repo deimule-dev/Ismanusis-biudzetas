@@ -1,11 +1,8 @@
-import { useAIInsights }
-from "../hooks/useAIInsights";
-
-import AILogsChart
-from "../components/charts/AILogsChart";
+import AILogsChart from "../components/charts/AILogsChart";
+import Loading from "../components/Loading";
+import { useAIInsights } from "../hooks/useAIInsights";
 
 export default function AIInsights() {
-
   const {
     insight,
     recommendations,
@@ -15,125 +12,74 @@ export default function AIInsights() {
     error,
   } = useAIInsights();
 
-  if (loading)
-    return <p>Loading...</p>;
+  if (loading) return <Loading />;
 
-  if (error)
-    return <p>{error}</p>;
+  if (error) {
+    return (
+      <div className="page">
+        <p className="alert alert--error">{error}</p>
+      </div>
+    );
+  }
 
-  const chartData =
-    Object.entries(
-
-      logs.reduce<Record<string, number>>(
-        (acc, log) => {
-
-          const date =
-            new Date(log.created_at)
-              .toLocaleDateString();
-
-          acc[date] =
-            (acc[date] || 0) + 1;
-
-          return acc;
-
-        },
-        {}
-      )
-
-    ).map(([date, count]) => ({
-      date,
-      count,
-    }));
+  const chartData = Object.entries(
+    logs.reduce<Record<string, number>>((acc, log) => {
+      const date = new Date(log.created_at).toLocaleDateString("lt");
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([date, count]) => ({ date, count }));
 
   return (
+    <div className="page">
+      <header className="page-header">
+        <h1>DI įžvalgos</h1>
+        <p className="page-subtitle">
+          Išmanūs finansiniai patarimai pagal jūsų duomenis
+        </p>
+      </header>
 
-    <div>
-
-      <h1>
-        AI Insights
-      </h1>
-
-      <hr />
-
-      <h2>
-        AI Insights
-      </h2>
-
-      <p>
-        {insight}
-      </p>
-
-      <hr />
-
-      <h2>
-        AI Recommendations
-      </h2>
-
-      <p>
-        {recommendations}
-      </p>
-
-      <hr />
-
-      <h2>
-        AI Monthly Summary
-      </h2>
-
-      <p>
-        {monthlySummary}
-      </p>
-
-      <hr />
-
-      <h2>
-        AI History
-      </h2>
-
-      <h3>
-        AI Usage Chart
-      </h3>
-
-      <AILogsChart
-        data={chartData}
-      />
-
-      <h3>
-        Recent AI Logs
-      </h3>
-
-      {logs.length === 0 && (
-        <p>No AI history yet.</p>
-      )}
-
-      {logs.map((log) => (
-
-        <div
-          key={log.id}
-          style={{
-            marginBottom: "1rem",
-            padding: "1rem",
-            border: "1px solid #e5e4e7",
-            borderRadius: "8px",
-          }}
-        >
-
-          <p>
-            <strong>
-              {new Date(
-                log.created_at
-              ).toLocaleString()}
-            </strong>
-          </p>
-
-          <p>
-            {log.response}
-          </p>
-
+      <div className="card-grid card-grid--2">
+        <div className="card">
+          <h2 className="card-title">✨ DI įžvalgos</h2>
+          <p style={{ margin: 0, lineHeight: 1.7 }}>{insight}</p>
         </div>
 
-      ))}
+        <div className="card">
+          <h2 className="card-title">💡 DI rekomendacijos</h2>
+          <p style={{ margin: 0, lineHeight: 1.7 }}>{recommendations}</p>
+        </div>
+      </div>
 
+      <div className="card" style={{ marginTop: "1.25rem" }}>
+        <h2 className="card-title">📅 DI mėnesio santrauka</h2>
+        <p style={{ margin: 0, lineHeight: 1.7 }}>{monthlySummary}</p>
+      </div>
+
+      <h2 className="section-title">DI istorija</h2>
+
+      <div className="chart-card">
+        <h3 className="card-title">DI naudojimo diagrama</h3>
+        <AILogsChart data={chartData} />
+      </div>
+
+      <h3 className="card-title">Paskutiniai DI įrašai</h3>
+
+      {logs.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state__icon">✨</div>
+          <p>DI istorijos dar nėra.</p>
+        </div>
+      ) : (
+        logs.map((log) => (
+          <div key={log.id} className="ai-log">
+            <time>
+              {new Date(log.created_at).toLocaleString("lt")}
+            </time>
+            <p style={{ margin: 0 }}>{log.response}</p>
+          </div>
+        ))
+      )}
     </div>
-
   );
 }

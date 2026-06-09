@@ -17,10 +17,11 @@ import ScenarioHistory from "./pages/ScenarioHistory";
 function App() {
   return (
     <BrowserRouter>
+      <div className="app">
+        <Navigation />
 
-      <Navigation />
-
-      <Routes>
+        <main className="main">
+          <Routes>
 
         <Route
           path="/"
@@ -57,8 +58,9 @@ function App() {
           element={<ScenarioHistory />}
         />
 
-      </Routes>
-
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
   );
 }
