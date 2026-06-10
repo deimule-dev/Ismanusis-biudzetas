@@ -10,6 +10,8 @@ export default function AIInsights() {
     logs,
     loading,
     error,
+    deleteError,
+    deletingId,
     removeLog,
   } = useAIInsights();
 
@@ -66,6 +68,10 @@ export default function AIInsights() {
 
       <h3 className="card-title">Paskutiniai DI įrašai</h3>
 
+      {deleteError && (
+        <p className="alert alert--error">{deleteError}</p>
+      )}
+
       {logs.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state__icon">✨</div>
@@ -88,9 +94,10 @@ export default function AIInsights() {
               </time>
               <button
                 className="btn btn-danger"
+                disabled={deletingId === log.id}
                 onClick={() => removeLog(log.id)}
               >
-                Ištrinti
+                {deletingId === log.id ? "Trinama…" : "Ištrinti"}
               </button>
             </div>
             <p style={{ margin: 0 }}>{log.response}</p>

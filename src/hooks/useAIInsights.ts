@@ -36,6 +36,12 @@ export function useAIInsights() {
   const [error, setError] =
     useState("");
 
+  const [deleteError, setDeleteError] =
+    useState("");
+
+  const [deletingId, setDeletingId] =
+    useState<number | null>(null);
+
   async function loadAI() {
 
     try {
@@ -109,12 +115,33 @@ export function useAIInsights() {
   }
 
   async function removeLog(id: number) {
+    setDeleteError("");
+    setDeletingId(id);
+
+    const previousLogs = logs;
+    setLogs((current) => current.filter((log) => log.id !== id));
+
     try {
-      await deleteAILog(id);
-      const updated = await getAILogs();
-      setLogs(updated);
+      const deleted = await deleteAILog(id);
+
+      if (!deleted) {
+        setDeleteError(
+          "Įrašas paslėptas šioje naršyklėje. Kad ištrintumėte visam laikui, Supabase SQL Editor paleiskite failą supabase/rls-ai-logs.sql"
+        );
+      }
     } catch {
-      // tyliai — mygtukas gali neveikti be RLS delete taisyklės
+      setDeleteError(
+        "Nepavyko ištrinti duomenų bazėje. Įrašas paslėptas šioje naršyklėje. Supabase SQL Editor paleiskite failą supabase/rls-ai-logs.sql"
+      );
+    } finally {
+      setDeletingId(null);
+
+      try {
+        const updated = await getAILogs();
+        setLogs(updated);
+      } catch {
+        setLogs(previousLogs.filter((log) => log.id !== id));
+      }
     }
   }
 
@@ -132,6 +159,8 @@ export function useAIInsights() {
     logs,
     loading,
     error,
+    deleteError,
+    deletingId,
     removeLog,
 
   };

@@ -13,7 +13,7 @@ export default function Simulator() {
   return (
     <div className="page">
       <header className="page-header">
-        <h1>„Kas jei" simuliatorius</h1>
+        <h1>Simuliatorius</h1>
         <p className="page-subtitle">
           Išbandykite skirtingus taupymo scenarijus
         </p>
