@@ -5,6 +5,8 @@ import {
 } from "react-router-dom";
 
 import Navigation from "./components/Navigation";
+import ConfigError from "./components/ConfigError";
+import { isSupabaseConfigured } from "./lib/supabase";
 
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
@@ -15,6 +17,10 @@ import Simulator from "./pages/Simulator";
 import ScenarioHistory from "./pages/ScenarioHistory";
 
 function App() {
+  if (!isSupabaseConfigured) {
+    return <ConfigError />;
+  }
+
   return (
     <BrowserRouter>
       <div className="app">
