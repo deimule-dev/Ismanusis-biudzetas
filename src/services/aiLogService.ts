@@ -34,3 +34,13 @@ export async function getAILogs() {
 
   return data || [];
 }
+
+export async function deleteAILog(id: number) {
+  const { error } = await supabase
+    .from("ai_logs")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", TEST_USER_ID);
+
+  if (error) throw error;
+}

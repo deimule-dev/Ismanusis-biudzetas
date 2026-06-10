@@ -8,8 +8,10 @@ import {
   generateMonthlySummary,
 } from "../services/aiService";
 
-import { getAILogs }
-from "../services/aiLogService";
+import {
+  deleteAILog,
+  getAILogs,
+} from "../services/aiLogService";
 
 import type { AILog }
 from "../types/aiLog";
@@ -106,6 +108,16 @@ export function useAIInsights() {
     }
   }
 
+  async function removeLog(id: number) {
+    try {
+      await deleteAILog(id);
+      const updated = await getAILogs();
+      setLogs(updated);
+    } catch {
+      // tyliai — mygtukas gali neveikti be RLS delete taisyklės
+    }
+  }
+
   useEffect(() => {
 
     loadAI();
@@ -120,6 +132,7 @@ export function useAIInsights() {
     logs,
     loading,
     error,
+    removeLog,
 
   };
 }

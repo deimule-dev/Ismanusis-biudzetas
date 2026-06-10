@@ -10,6 +10,7 @@ export default function AIInsights() {
     logs,
     loading,
     error,
+    removeLog,
   } = useAIInsights();
 
   if (loading) return <Loading />;
@@ -73,9 +74,25 @@ export default function AIInsights() {
       ) : (
         logs.map((log) => (
           <div key={log.id} className="ai-log">
-            <time>
-              {new Date(log.created_at).toLocaleString("lt")}
-            </time>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: "1rem",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <time>
+                {new Date(log.created_at).toLocaleString("lt")}
+              </time>
+              <button
+                className="btn btn-danger"
+                onClick={() => removeLog(log.id)}
+              >
+                Ištrinti
+              </button>
+            </div>
             <p style={{ margin: 0 }}>{log.response}</p>
           </div>
         ))
