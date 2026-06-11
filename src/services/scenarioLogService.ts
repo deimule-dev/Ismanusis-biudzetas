@@ -1,9 +1,9 @@
+import { requireUserId } from "../lib/auth";
 import { supabase } from "../lib/supabase";
 
-const TEST_USER_ID =
-  "11111111-1111-1111-1111-111111111111";
-
-const LOCAL_KEY = "scenario_logs_local";
+function localKey(userId: string) {
+  return `scenario_logs_local_${userId}`;
+}
 
 interface ScenarioLogEntry {
   id: number;
@@ -17,10 +17,10 @@ interface ScenarioLogEntry {
   source?: "local";
 }
 
-function getLocalLogs(): ScenarioLogEntry[] {
+function getLocalLogs(userId: string): ScenarioLogEntry[] {
   try {
     return JSON.parse(
-      localStorage.getItem(LOCAL_KEY) || "[]"
+      localStorage.getItem(localKey(userId)) || "[]"
     );
   } catch {
     return [];
@@ -28,6 +28,7 @@ function getLocalLogs(): ScenarioLogEntry[] {
 }
 
 function saveLocalLog(
+  userId: string,
   income: number,
   expenses: number,
   goalAmount: number,
@@ -36,7 +37,7 @@ function saveLocalLog(
 ) {
   const entry: ScenarioLogEntry = {
     id: Date.now(),
-    user_id: TEST_USER_ID,
+    user_id: userId,
     income,
     expenses,
     goal_amount: goalAmount,
@@ -46,9 +47,9 @@ function saveLocalLog(
     source: "local",
   };
 
-  const logs = getLocalLogs();
+  const logs = getLocalLogs(userId);
   logs.unshift(entry);
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(logs));
+  localStorage.setItem(localKey(userId), JSON.stringify(logs));
 
   return entry;
 }
@@ -60,12 +61,13 @@ export async function saveScenarioLog(
   scenarioResult: unknown,
   aiResponse: string
 ) {
+  const userId = await requireUserId();
   const response = aiResponse || "DI analizė negeneruota.";
 
   const { error } = await supabase
     .from("scenario_logs")
     .insert([{
-      user_id: TEST_USER_ID,
+      user_id: userId,
       income,
       expenses,
       goal_amount: goalAmount,
@@ -78,6 +80,7 @@ export async function saveScenarioLog(
   }
 
   saveLocalLog(
+    userId,
     income,
     expenses,
     goalAmount,
@@ -92,13 +95,15 @@ export async function saveScenarioLog(
 }
 
 export async function getScenarioLogs() {
+  const userId = await requireUserId();
+
   const { data, error } = await supabase
     .from("scenario_logs")
     .select("*")
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  const localLogs = getLocalLogs();
+  const localLogs = getLocalLogs(userId);
 
   if (error) {
     return localLogs.sort(
@@ -124,17 +129,19 @@ export async function getScenarioLogs() {
   );
 }
 
-function deleteLocalLog(id: number) {
-  const logs = getLocalLogs().filter((log) => log.id !== id);
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(logs));
+function deleteLocalLog(userId: string, id: number) {
+  const logs = getLocalLogs(userId).filter((log) => log.id !== id);
+  localStorage.setItem(localKey(userId), JSON.stringify(logs));
 }
 
 export async function deleteScenarioLog(
   id: number,
   source?: "local"
 ) {
+  const userId = await requireUserId();
+
   if (source === "local") {
-    deleteLocalLog(id);
+    deleteLocalLog(userId, id);
     return;
   }
 
@@ -142,9 +149,9 @@ export async function deleteScenarioLog(
     .from("scenario_logs")
     .delete()
     .eq("id", id)
-    .eq("user_id", TEST_USER_ID);
+    .eq("user_id", userId);
 
   if (error) {
-    deleteLocalLog(id);
+    deleteLocalLog(userId, id);
   }
 }

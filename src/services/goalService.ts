@@ -1,6 +1,5 @@
+import { requireUserId } from "../lib/auth";
 import { supabase } from "../lib/supabase";
-
-const USER_ID = "11111111-1111-1111-1111-111111111111";
 
 export async function getGoals() {
   const { data, error } = await supabase
@@ -18,11 +17,13 @@ export async function addGoal(
   target_amount: number,
   target_date: string
 ) {
+  const userId = await requireUserId();
+
   const { error } = await supabase
     .from("goals")
     .insert([
       {
-        user_id: USER_ID,
+        user_id: userId,
         title,
         target_amount,
         current_amount: 0,

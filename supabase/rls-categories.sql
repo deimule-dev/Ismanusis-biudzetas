@@ -3,9 +3,10 @@
 alter table categories enable row level security;
 
 drop policy if exists "Allow anon select categories" on categories;
+drop policy if exists "Allow authenticated select categories" on categories;
 
-create policy "Allow anon select categories"
+create policy "Allow authenticated select categories"
 on categories
 for select
-to anon
+to authenticated
 using (true);

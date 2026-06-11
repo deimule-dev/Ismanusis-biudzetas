@@ -1,3 +1,4 @@
+import { requireUserId } from "../lib/auth";
 import { supabase } from "../lib/supabase";
 
 export async function addTransaction(
@@ -6,11 +7,13 @@ export async function addTransaction(
   note: string,
   category_id: number
 ) {
+  const userId = await requireUserId();
+
   const { error } = await supabase
     .from("transactions")
     .insert([
       {
-        user_id: "11111111-1111-1111-1111-111111111111",
+        user_id: userId,
         amount,
         type,
         note,

@@ -1,43 +1,44 @@
+import { requireUserId } from "../lib/auth";
 import { supabase } from "../lib/supabase";
 
-const TEST_USER_ID =
-  "11111111-1111-1111-1111-111111111111";
+function hiddenKey(userId: string) {
+  return `ai_logs_hidden_${userId}`;
+}
 
-const HIDDEN_KEY = "ai_logs_hidden";
-
-function getHiddenIds(): number[] {
+function getHiddenIds(userId: string): number[] {
   try {
     return JSON.parse(
-      localStorage.getItem(HIDDEN_KEY) || "[]"
+      localStorage.getItem(hiddenKey(userId)) || "[]"
     );
   } catch {
     return [];
   }
 }
 
-function hideLocalAILog(id: number) {
-  const ids = getHiddenIds();
+function hideLocalAILog(userId: string, id: number) {
+  const ids = getHiddenIds(userId);
   if (!ids.includes(id)) {
     ids.push(id);
-    localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
+    localStorage.setItem(hiddenKey(userId), JSON.stringify(ids));
   }
 }
 
-function unhideLocalAILog(id: number) {
-  const ids = getHiddenIds().filter((hiddenId) => hiddenId !== id);
-  localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
+function unhideLocalAILog(userId: string, id: number) {
+  const ids = getHiddenIds(userId).filter((hiddenId) => hiddenId !== id);
+  localStorage.setItem(hiddenKey(userId), JSON.stringify(ids));
 }
 
 export async function saveAILog(
   prompt: string,
   response: string
 ) {
+  const userId = await requireUserId();
 
   const { error } = await supabase
     .from("ai_logs")
     .insert([
       {
-        user_id: TEST_USER_ID,
+        user_id: userId,
         prompt,
         response,
       },
@@ -47,12 +48,13 @@ export async function saveAILog(
 }
 
 export async function getAILogs() {
-  const hiddenIds = new Set(getHiddenIds());
+  const userId = await requireUserId();
+  const hiddenIds = new Set(getHiddenIds(userId));
 
   const { data, error } = await supabase
     .from("ai_logs")
     .select("*")
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", userId)
     .order("created_at", {
       ascending: false,
     });
@@ -63,23 +65,25 @@ export async function getAILogs() {
 }
 
 export async function deleteAILog(id: number) {
+  const userId = await requireUserId();
+
   const { data, error } = await supabase
     .from("ai_logs")
     .delete()
     .eq("id", id)
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", userId)
     .select("id");
 
   if (error) {
-    hideLocalAILog(id);
+    hideLocalAILog(userId, id);
     throw error;
   }
 
   if (!data || data.length === 0) {
-    hideLocalAILog(id);
+    hideLocalAILog(userId, id);
     return false;
   }
 
-  unhideLocalAILog(id);
+  unhideLocalAILog(userId, id);
   return true;
 }

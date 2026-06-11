@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const links = [
   { to: "/", label: "Apžvalga", icon: "📊" },
@@ -11,6 +12,8 @@ const links = [
 ];
 
 export default function Navigation() {
+  const { user, signOut } = useAuth();
+
   return (
     <nav className="nav">
       <NavLink to="/" className="nav-brand">
@@ -32,6 +35,19 @@ export default function Navigation() {
             {link.label}
           </NavLink>
         ))}
+      </div>
+
+      <div className="nav-user">
+        <span className="nav-user__email" title={user?.email ?? ""}>
+          {user?.email}
+        </span>
+        <button
+          type="button"
+          className="btn btn-ghost nav-user__logout"
+          onClick={() => signOut()}
+        >
+          Atsijungti
+        </button>
       </div>
     </nav>
   );
